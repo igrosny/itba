@@ -18,42 +18,48 @@ def get_class_prob_naive(x_data, y_data, joint_class_1, joint_class_2, likelihoo
     return p_class_1, p_class_2
 
 def get_class_prob(x1_data, x2_data, joint_class_1, joint_class_2):
-    """
+    '''
     Devuelve algo
     
     Parameters:
-    x1_data (int): Los datos de la primera clase
-    """
+        x1_data (int): Los datos de la primera clase
+    
+    Returns:
+        p_class_1 
+        p_class_2
+    '''
+    
     prior_class_1 = joint_class_1.N/ (joint_class_1.N + joint_class_2.N)
     prior_class_2 = joint_class_2.N/ (joint_class_1.N + joint_class_2.N)
+    
     likelihood_class_1 = joint_class_1.get_prob(x1_data, x2_data)
     likelihood_class_2 = joint_class_2.get_prob(x1_data, x2_data)
+    
     total = likelihood_class_1*prior_class_1 + prior_class_2*likelihood_class_2
     # Evita division por cero
     total[total==0] = 1
-    p_class_1 = prior_class_1*likelihood_class_1/total
-    p_class_2 = prior_class_2*likelihood_class_2/total
+    
+    p_class_1 = prior_class_1 * likelihood_class_1/total
+    p_class_2 = prior_class_2 * likelihood_class_2/total
     # Las indeterminadas en 0.5
     p_class_1[total==1] = 0.5
     p_class_2[total==1] = 0.5
+    
     return p_class_1, p_class_2                
 
 class BiVariateJoint:
     '''
     Clase para generar una distribucion bivariada
-    
-    Distribucion Bivariada: En probabilidad, dados dos eventos aleatorios X y Y, la distribución conjunta de X y Y
-    es la distribución de probabilidad de la intersección de eventos de X y Y, esto es, de los eventos X e Y
-    ocurriendo de forma simultánea. En el caso de solo dos variables aleatorias se denomina una distribución
-    bivariada, pero el concepto se generaliza a cualquier número de eventos o variables aleatorias.
+
     
     Attributes:
         data (np.array): Tiene que ser np.array de dos columnas
         step_X (int): de a cuanto quiero agrupar los valores de X (default 1)
         step_Y (int): de a cuanto quiero agrupar los valores de Y (default 1)
-        data_rounded (int): Asumo que son los valores redondeados
-        maxs (int, int): los valores mas altos
-        mins (int, int): Los valores mas chicos
+        data_rounded (np.array): Son los valores redondeados, los divido por el step, redondeo y multiplico
+        maxs (np.array): Los valores mas altos de cada columna
+        mins (np.array): Los valores mas chicos de cada columna
+        frequencies:
         X
         Y
         joint_matrix
@@ -79,24 +85,35 @@ class BiVariateJoint:
         self.data = data
         self.data_rounded = (np.round(data / step) * step)
         
+        # Si no le paso los maximos los calcula
         if maxs is None:
             self.maxs = np.max(self.data_rounded, axis = 0) + 1
         else:
             self.maxs = maxs
         
+        # Si no le paso los minimos los calcula
         if mins is None:
             self.mins = np.min(self.data_rounded, axis = 0) - 1
         else:
             self.mins = mins
         
-        tuples = [tuple(row) for row in self.data_rounded]
+        # Lo convierto a tuplas y cuento la cantidad de cada uno
+        # Y cuento cuantos epsacios tengo de cada uno
+        tuples = [tuple(row) for row in self.data_rounded]        
         self.frequencies = Counter(tuples)
+        
         # Agrego uno adelante y otro atras para cubrirme
         count_X = int(np.round((self.maxs[0] - self.mins[0]) / step_X)) + 1
         count_Y = int(np.round((self.maxs[1] - self.mins[1]) / step_Y)) + 1
+
+        # np.linspace: Devuelve numero espeaciados de manera uniforme sobre un intervalo definido
         self.X = np.linspace(self.mins[0] - step_X, self.mins[0] + step_X * count_X, count_X + 2)
         self.Y = np.linspace(self.mins[1] - step_Y, self.mins[1] + step_Y * count_Y, count_Y + 2)
+        
+        # Crea la matriz de frecuencia
         self.joint_matrix = self.freq_2_matrix()
+        
+        # Guarda el tamaño del arreglo
         self.N = len(data)
     
     def plot_data(self, color='b'):
@@ -119,11 +136,19 @@ class BiVariateJoint:
         return prob
     
     def freq_2_matrix(self):
+        '''
+        Crea la matriz de frecuencia conjunta con los valores
+        
+        Returns:
+            joint (np.array): La matriz de frecuencia
+        '''
         joint = np.zeros([len(self.X), len(self.Y)])
+        
         for index, frec in self.frequencies.items():
             x = (index[0] - self.X[0])/self.step_X
             y = (index[1] - self.Y[0])/self.step_Y
             joint[int(x), int(y)] = frec
+        
         return joint
     
     def get_Marginals(self, normalized=True):
@@ -136,19 +161,27 @@ class BiVariateJoint:
         return marg_1, marg_2
     
     def plot_joint_3d(self, joint_matrix = None, el=50, az=-5, ax=None, color='b', title=''):
+        '''
+        Grafica la probabilidad conjunta
+        '''
         xpos, ypos = np.meshgrid(self.X, self.Y)
         xpos = xpos.T.flatten()
         ypos = ypos.T.flatten()
+        
         zpos = np.zeros(xpos.shape)
+        
         dx = self.step_X * np.ones_like(zpos)
         dy = self.step_Y * np.ones_like(zpos)
+        
         if joint_matrix is None:
             dz = self.joint_matrix.astype(int).flatten()
         else:
             dz = joint_matrix.flatten()
+        
         if ax == None:
             fig = plt.figure(figsize=(20,20))
             ax = fig.add_subplot(111, projection='3d')
+        
         ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=color, alpha=0.5)
         ax.set_title(title)
         ax.view_init(el, az)
