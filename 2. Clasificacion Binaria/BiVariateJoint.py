@@ -21,8 +21,11 @@ def get_class_prob(x1_data, x2_data, joint_class_1, joint_class_2):
     '''
     Devuelve algo
     
-    Parameters:
+    Args:
         x1_data (int): Los datos de la primera clase
+        x2_data (int): los datos de la segunda clase
+        joint_class_1 (BiVariateJoint): Distribucion de primera clase
+        joint_class_2 (BiVariateJoint): Distribucion de segunda clase
     
     Returns:
         p_class_1 
@@ -36,12 +39,14 @@ def get_class_prob(x1_data, x2_data, joint_class_1, joint_class_2):
     likelihood_class_1 = joint_class_1.get_prob(x1_data, x2_data)
     likelihood_class_2 = joint_class_2.get_prob(x1_data, x2_data)
     
-    total = likelihood_class_1*prior_class_1 + prior_class_2*likelihood_class_2
+    # Calculo las marginal
+    total = likelihood_class_1 * prior_class_1 + prior_class_2 * likelihood_class_2
     # Evita division por cero
     total[total==0] = 1
     
-    p_class_1 = prior_class_1 * likelihood_class_1/total
-    p_class_2 = prior_class_2 * likelihood_class_2/total
+    p_class_1 = prior_class_1 * likelihood_class_1 / total
+    p_class_2 = prior_class_2 * likelihood_class_2 / total
+    
     # Las indeterminadas en 0.5
     p_class_1[total==1] = 0.5
     p_class_2[total==1] = 0.5
@@ -124,16 +129,40 @@ class BiVariateJoint:
         plt.scatter(self.data_rounded[:,0], self.data_rounded[:,1], color=color, s=2)
     
     def data_to_index(self, x, y):
+        '''
+        Funcion que convierte un par de variables en los indices de las matriz
+        
+        Args:
+            x (int): valor de la priemr variables
+            y (int): valor de la segunda variable
+        
+        Returns:
+            x, y (int, int): los indices de la matriz
+        '''
         x = np.round((x - self.X[0])/self.step_X).astype(int)
         y = np.round((y - self.Y[0])/self.step_Y).astype(int)
         return x, y
 
     def get_prob(self, x, y, normalized=True):
+        '''
+        Devuelve la probabilidad conjunta de dos variables, con la opcion de 
+        ser normalizadas
+        
+        Args:
+            x (int): valor de la primera vairable
+            y (int): valor de la segunda variable
+            normalized (boolean): true, si quiero que me devuelva el valor normalizado
+            
+        Return
+            prob: la probabilidad conjunta de las variables x, y
+        '''
         x, y = self.data_to_index(x, y)
+
         if normalized:
             prob = self.joint_matrix[x , y]/self.N
         else:
             prob = self.joint_matrix[x , y]
+            
         return prob
     
     def freq_2_matrix(self):
