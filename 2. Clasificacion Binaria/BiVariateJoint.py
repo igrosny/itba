@@ -29,8 +29,9 @@ def get_class_prob(x1_data, x2_data, joint_class_1, joint_class_2):
         p_class_2
     '''
     
-    prior_class_1 = joint_class_1.N/ (joint_class_1.N + joint_class_2.N)
-    prior_class_2 = joint_class_2.N/ (joint_class_1.N + joint_class_2.N)
+    # Calculo la prior de cada clase
+    prior_class_1 = joint_class_1.N / (joint_class_1.N + joint_class_2.N)
+    prior_class_2 = joint_class_2.N / (joint_class_1.N + joint_class_2.N)
     
     likelihood_class_1 = joint_class_1.get_prob(x1_data, x2_data)
     likelihood_class_2 = joint_class_2.get_prob(x1_data, x2_data)
