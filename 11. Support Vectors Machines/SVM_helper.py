@@ -3,17 +3,25 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 
 def plot_boundaries(X_train, y_train, score=None, probability_func=None, support_vectors=None,n_colors = 100, mesh_res = 1000, ax = None):
+    '''
+    Dibuja los alcances
+    '''
     X = X_train
     if len(y_train.shape) == 2 and y_train.shape[1] == 1:
         y_train = y_train.reshape(-1)
-    margin_x = (X[:, 0].max() - X[:, 0].min())*0.05
-    margin_y = (X[:, 1].max() - X[:, 1].min())*0.05
+        
+    margin_x = (X[:, 0].max() - X[:, 0].min()) * 0.05
+    margin_y = (X[:, 1].max() - X[:, 1].min()) * 0.05
+    
     x_min, x_max = X[:, 0].min() - margin_x, X[:, 0].max() + margin_x
     y_min, y_max = X[:, 1].min() - margin_y, X[:, 1].max() + margin_y
+    
     hx = (x_max-x_min)/mesh_res
     hy = (y_max-y_min)/mesh_res
+    
     x_domain = np.arange(x_min, x_max, hx)
     y_domain = np.arange(y_min, y_max, hy)
+    
     xx, yy = np.meshgrid(x_domain, y_domain)
 
     if ax is None:
