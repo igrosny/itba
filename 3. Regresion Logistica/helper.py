@@ -146,7 +146,7 @@ def plotBoundary(data, labels, clf_1=None, N=300, degree=False, include_bias=Fal
         clf_1 (classifier)
         N (int): Default 300, estaba en 20 pero despues sobreescribia
         degree (Boolean)
-        include_bias (Boolean)
+        include_bias (Boolean): Incluye una columna de Bias?
         ax ()
         mins
         maxs
