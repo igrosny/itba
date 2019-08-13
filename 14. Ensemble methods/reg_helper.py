@@ -86,19 +86,42 @@ def get_lin_reg_pol(data, order=1, normalize=True, mean = 0, std = 1):
         return data_all
 
 def nCr(n,r):
+    '''
+    nCr Son todas las combinaciones de n elementos en grupos
+    de r elementos
+    
+    Args:
+        n (int): Cantidad de elementos
+        r (int): Cantidad de elementos por grupo
+        
+    Returns:
+        (int): 
+    '''
     f = math.factorial
     return int(f(n) / f(r) / f(n-r))
 
 def get_polynimial_set(X, degree = 12, bias = True):
-    # Recibe el dataset X de numero_de_muestras x features  y devuelve una matriz con todas las combinaciones 
+    '''
+    Recibe el dataset X de numero_de_muestras x features  y devuelve 
+    una matriz con todas las combinaciones 
+    
+    Args:
+        X (np.array)
+        degree (int): El grado del polinimo
+        bias (boolean):
+    Returns:
+        X_mat 
+    '''
+    
     # De los productos del grado indicado en degree
     k = 2
     n = degree + k
     pos = 0
-    X_mat = np.zeros((X.shape[0],nCr(n,k)))
+    X_mat = np.zeros((X.shape[0], nCr(n, k)))
+    
     for i in range(degree + 1):
-        for j in range(i+1):
-            X_mat[:,pos] = (X[:,0]**(i-j))*X[:,1]**j
+        for j in range(i + 1):
+            X_mat[:, pos] = (X[:, 0] ** (i - j)) * X[:, 1] ** j
             pos = pos + 1
     if bias:
         return X_mat
