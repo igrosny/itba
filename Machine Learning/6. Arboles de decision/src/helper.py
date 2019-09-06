@@ -29,10 +29,10 @@ def huffman(p):
     Return a Huffman code for an ensemble with distribution p.
     
     Args:
-        p
+        p (dict) : Un diccionario con sus correspondientes probabilidades
     
     Returns:
-        c
+        c (tree): Un arbol?
     '''
     #assert(sum(p.values()) == 1.0) # Ensure probabilities sum to 1
 
