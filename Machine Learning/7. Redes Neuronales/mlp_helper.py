@@ -140,25 +140,35 @@ def draw_neural_net(ax, left, right, bottom, top, layer_sizes, coefs_, intercept
         plt.arrow(right+0.015, layer_top_0 - m*v_spacing, 0.16*h_spacing, 0,  lw =1, head_width=0.01, head_length=0.02)
         
 def get_dataset(random_seed=42, N=200):
-    N = N//4
+    '''
+    Genera un dataset de distribucion normal
+    
+    Args:
+        random_seed: (int) el inicializador random
+        N: (int) el tamano de la muestra? cantidad de parametros?
+        
+    Returns:
+        X
+    '''
+    N = N // 4
     np.random.seed(random_seed)
     X1 = np.random.multivariate_normal(np.array([0, 0]), [[1,0],[0,1]], 2*N)
     X2 = np.random.multivariate_normal(np.array([0, 6]), [[6,0],[0,1]], N)
     X3 = np.random.multivariate_normal(np.array([6, 0]), [[1,0],[0,6]], N)
     X = np.vstack([X1, X2, X3])
-    y = np.vstack([np.ones((2*N, 1)), np.zeros((2*N, 1))]).reshape(-1)
+    y = np.vstack([np.ones((2 * N, 1)), np.zeros((2 * N, 1))]).reshape(-1)
     return X, y
 
 def get_dataset_2(random_seed=42, N=200):
-    N = N//4
+    N = N // 4
     np.random.seed(random_seed)
-    X1 = np.random.multivariate_normal(np.array([0, 0]), [[1,0],[0,1]], 2*N)
+    X1 = np.random.multivariate_normal(np.array([0, 0]), [[1,0],[0,1]], 2 * N)
     X2 = np.random.multivariate_normal(np.array([0, 6]), [[6,0],[0,1]], N)
     X3 = np.random.multivariate_normal(np.array([6, 0]), [[1,0],[0,6]], N)
     X4 = np.random.multivariate_normal(np.array([-6, 0]), [[1,0],[0,6]], N)
     X5 = np.random.multivariate_normal(np.array([0, -6]), [[6,0],[0,1]], N)
     X = np.vstack([X1, X2, X3, X4, X5])
-    y = np.vstack([np.ones((2*N, 1)), np.zeros((4*N, 1))]).reshape(-1)
+    y = np.vstack([np.ones((2 * N, 1)), np.zeros((4 * N, 1))]).reshape(-1)
     return X, y
 
 def generate_gaussians_distributions(sep=1, N=500, random_state=42, normalize=True):

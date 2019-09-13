@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 def entropy(dist):
     '''
-    Calcula la entropia de una distribucion
+    Calcula la entropia de una distribucion.
     
     Args:
         dist (lib)
